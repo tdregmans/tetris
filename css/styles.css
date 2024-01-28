@@ -1,0 +1,108 @@
+body {
+    background-color: lightslategray;
+    margin: 0;
+}
+noscript {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    background-color: red;
+    color: whitesmoke;
+    font-size: 40px;
+}
+
+select{
+    border:none;
+    padding: 10px 20px;
+    margin: 20px;
+    border-radius:5px;
+  }
+
+.screen {
+    background-color: whitesmoke;
+    justify-content: center;
+    align-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -240px;
+    margin-left: -320px;
+    border-radius: 10px;
+}
+
+.info {
+    background-color: whitesmoke;
+    position: absolute;
+    top: 50%;
+    margin-top: -240px;
+    width: 15%;
+
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.left-info {
+    left: 5%;
+}
+
+.right-info {
+    right: 5%;
+}
+
+
+.info + .info {
+    margin-top: 40px;
+}
+
+.indicator-value {
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 3px 10px;
+    text-decoration: none;
+    color: #fff;
+    font-family: arial;
+    top: -2px;
+    position: relative;
+}
+
+.indicator & .indicator {
+    margin: 100px;
+}
+
+.indicator {
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 3px 10px;
+    text-decoration: none;
+    font-family: arial;
+    margin: 2px;
+    top: -2px;
+    position: relative;
+    display: inline-block;
+}
+
+.title {
+    color: whitesmoke;
+    text-align: center;
+}
+
+.comment {
+    position: fixed;
+    bottom: 0;
+    right: 2em;
+}
+
+.link {
+    color: #ccff00
+}
+
+.outside-text {
+    color: #FFFFFF;
+    size: 5px;
+}
