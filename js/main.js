@@ -4,7 +4,7 @@
  * version: 1.0
  * 
  * Author: Thijs Dregmans
- * Last edited: 2024-01-28
+ * Last edited: 2024-01-30
  * 
  * See README.md for more information.
  */
@@ -23,13 +23,13 @@ const ENTRY_SIZE = 15;
 const FIELD_HORIZONTAL_SIZE = 15;
 const FIELD_VERTICAL_SIZE = 30;
 
-const EMTPY_BLOCK = 0;
+const EMTPY_BLOCK = "#808080";
 const STANDARD_BLOCK = 1;
-const BLOCK_TYPE_1 = 2;
-const BLOCK_TYPE_2 = 3;
-const BLOCK_TYPE_3 = 4;
-const BLOCK_TYPE_4 = 5;
-const BLOCK_TYPE_5 = 6;
+const BLOCK_TYPE_1 = "#FF2222";
+const BLOCK_TYPE_2 = "#22FF22";
+const BLOCK_TYPE_3 = "#2222FF";
+const BLOCK_TYPE_4 = "#FFFF22";
+const BLOCK_TYPE_5 = "#22FFFF";
 
 const BLOCK_TYPES = [EMTPY_BLOCK, STANDARD_BLOCK, BLOCK_TYPE_1, BLOCK_TYPE_2, BLOCK_TYPE_3, BLOCK_TYPE_4, BLOCK_TYPE_5];
 
@@ -49,40 +49,62 @@ class Field {
       this.grid.push(column);
     }
 
-    // for (let x = 0; x < this.horizontalSize; x++) {
-    //   for (let y = 0; y < this.verticalSize; y++) {
-    //     drawEntry(x, y, "#808080");
-    //   }
-    // } 
-
   }
 
   getEntry(x, y) {
     return this.grid[x][y];
   }
 
-  draw(currentTetrisObject) {
+  setEntry(x, y, newValue) {
+    this.grid[x][y] = newValue;
+  }
+
+  draw() {
     for (let x = 0; x < this.horizontalSize; x++) {
       for (let y = 0; y < this.verticalSize; y++) {
 
-        var coords = currentTetrisObject.getCoords();
-        coords.forEach( coord => {
-          let alreadyDrawn = true;
-          if (coord[0] == x && coord[1] == y) {
-            drawEntry(x, y, "#00FF00");
-            console.log(coord + ": green");
-            alreadyDrawn = false;
-          }
-          else {
-            // if (!alreadyDrawn) {
-              drawEntry(x, y, "#808080");
-            // }
-          }
-        });
+        drawEntry(x, y, this.getEntry(x, y));
         
       }
-    } 
-    console.log("----");
+    }
+    field.drawObject(currentTetrisObject);
+  }
+
+  drawObject(currentTetrisObject) {
+    var coords = currentTetrisObject.getCoords();
+    coords.forEach( coord => {
+      drawEntry(coord[0], coord[1],  currentTetrisObject.type );
+    });
+  }
+
+  moveAllowed(coords) {
+    var allowed = true;
+    coords.forEach( coord => {
+      if (
+        coord[0] < 0 || 
+        coord[0] >= this.horizontalSize ||
+        coord[1] < 0 || 
+        coord[1] >= this.verticalSize
+      ) {
+        // coord is outside the playfield
+        allowed = false;
+      }
+
+      if (field.getEntry(coord[0], coord[1]) != EMTPY_BLOCK) {
+        // coord is already taken by another block
+        allowed = false;
+      }
+    });
+    return allowed;
+  }
+
+  newObject() {
+    var coords = currentTetrisObject.getCoords();
+    coords.forEach( coord => {
+      this.setEntry(coord[0], coord[1], currentTetrisObject.type);
+    });
+    currentTetrisObject = new TetrisObject(BLOCK_TYPES[Math.floor(Math.random() * BLOCK_TYPES.length)])
+    field.draw();
   }
 }
 
@@ -90,6 +112,7 @@ class Field {
 
 class TetrisObject {
   constructor(type) {
+    this.type = type;
     if (type == STANDARD_BLOCK) {
       this.coords = [[Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0]];
     }
@@ -140,7 +163,54 @@ class TetrisObject {
     this.coords.forEach(coord => {
       newCoords.push([coord[0], coord[1] + 1]);
     });
-    this.coords = newCoords;
+    console.log(field.moveAllowed(newCoords));
+    if (field.moveAllowed(newCoords)) {
+      this.coords = newCoords;
+      return true;
+    }
+    else {
+      
+      field.newObject();
+      return false;
+
+      // create new object, because the current cannot be moved down
+    }
+  }
+
+  left() {
+    var newCoords = [];
+    this.coords.forEach(coord => {
+      newCoords.push([coord[0] - 1, coord[1]]);
+    });
+    if (field.moveAllowed(newCoords)) {
+      this.coords = newCoords;
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  right() {
+    var newCoords = [];
+    this.coords.forEach(coord => {
+      newCoords.push([coord[0] + 1, coord[1]]);
+    });
+    if (field.moveAllowed(newCoords)) {
+      this.coords = newCoords;
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  down() {
+    while (this.moveDown()) {}
+  }
+
+  rotate() {
+
   }
 
   getCoords() {
@@ -187,8 +257,49 @@ var currentTetrisObject = new TetrisObject(BLOCK_TYPE_2);
 function main() {
   currentTetrisObject.moveDown();
 
-  field.draw(currentTetrisObject);
+  field.draw();
 }
+
+window.addEventListener(
+  "keydown",
+  (event) => {
+    if (event.defaultPrevented) {
+      return; // Do nothing if the event was already processed
+    }
+
+    if (active) {
+      switch (event.key) {
+        case "ArrowDown":
+          // Do something for "down arrow" key press.
+          currentTetrisObject.down();
+          field.draw();
+          break;
+        case "ArrowUp":
+          // Do something for "up arrow" key press.
+          currentTetrisObject.rotate();
+          field.draw();
+          break;
+        case "ArrowLeft":
+          // Do something for "left arrow" key press.
+          currentTetrisObject.left();
+          field.draw();
+          break;
+        case "ArrowRight":
+          // Do something for "right arrow" key press.
+          currentTetrisObject.right();
+          field.draw(); 
+          break;
+        default:
+          return; // Quit when this doesn't handle the key event.
+      }
+    }
+    
+
+    // Cancel the default action to avoid it being handled twice
+    event.preventDefault();
+  },
+  true,
+);
 
 // execute code
 if (canvas.getContext) {
