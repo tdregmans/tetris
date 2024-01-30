@@ -31,7 +31,7 @@ const BLOCK_TYPE_3 = "#2222FF";
 const BLOCK_TYPE_4 = "#FFFF22";
 const BLOCK_TYPE_5 = "#22FFFF";
 
-const BLOCK_TYPES = [EMTPY_BLOCK, STANDARD_BLOCK, BLOCK_TYPE_1, BLOCK_TYPE_2, BLOCK_TYPE_3, BLOCK_TYPE_4, BLOCK_TYPE_5];
+const BLOCK_TYPES = [BLOCK_TYPE_1, BLOCK_TYPE_2, BLOCK_TYPE_3, BLOCK_TYPE_4, BLOCK_TYPE_5];
 
 /** ************************************************************************************** */
 
@@ -99,11 +99,12 @@ class Field {
   }
 
   newObject() {
+    console.log("new object");
     var coords = currentTetrisObject.getCoords();
     coords.forEach( coord => {
       this.setEntry(coord[0], coord[1], currentTetrisObject.type);
     });
-    currentTetrisObject = new TetrisObject(BLOCK_TYPES[Math.floor(Math.random() * BLOCK_TYPES.length)])
+    currentTetrisObject = new TetrisObject(BLOCK_TYPES[Math.floor(Math.random() * BLOCK_TYPES.length)]);
     field.draw();
   }
 }
@@ -113,6 +114,7 @@ class Field {
 class TetrisObject {
   constructor(type) {
     this.type = type;
+    console.log(type);
     if (type == STANDARD_BLOCK) {
       this.coords = [[Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0]];
     }
@@ -163,16 +165,14 @@ class TetrisObject {
     this.coords.forEach(coord => {
       newCoords.push([coord[0], coord[1] + 1]);
     });
-    console.log(field.moveAllowed(newCoords));
+
+    console.log(this.coords);
     if (field.moveAllowed(newCoords)) {
       this.coords = newCoords;
       return true;
     }
     else {
-      
-      field.newObject();
       return false;
-
       // create new object, because the current cannot be moved down
     }
   }
@@ -206,7 +206,11 @@ class TetrisObject {
   }
 
   down() {
-    while (this.moveDown()) {}
+    while (this.moveDown()) {
+      console.log("move down");
+    }
+    
+    // field.newObject();
   }
 
   rotate() {
@@ -252,12 +256,18 @@ function startStop() {
 
 var field = new Field(FIELD_HORIZONTAL_SIZE, FIELD_VERTICAL_SIZE);
 
-var currentTetrisObject = new TetrisObject(BLOCK_TYPE_2);
+var currentTetrisObject = new TetrisObject(BLOCK_TYPES[Math.floor(Math.random() * BLOCK_TYPES.length)]);
 
 function main() {
-  currentTetrisObject.moveDown();
-
-  field.draw();
+  console.log("main");
+  var createNew = !currentTetrisObject.moveDown();
+  if (createNew) {
+    console.log(createNew);
+    field.newObject();
+  }
+  else {
+    field.draw();
+  }
 }
 
 window.addEventListener(
