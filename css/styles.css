@@ -57,7 +57,7 @@ select{
 
 
 .info + .info {
-    margin-top: 40px;
+    margin-top: -160px;
 }
 
 .indicator-value {

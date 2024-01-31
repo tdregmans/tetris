@@ -4,7 +4,7 @@
  * version: 1.0
  * 
  * Author: Thijs Dregmans
- * Last edited: 2024-01-30
+ * Last edited: 2024-01-31
  * 
  * See README.md for more information.
  */
@@ -24,14 +24,19 @@ const FIELD_HORIZONTAL_SIZE = 15;
 const FIELD_VERTICAL_SIZE = 30;
 
 const EMTPY_BLOCK = "#808080";
-const STANDARD_BLOCK = 1;
 const BLOCK_TYPE_1 = "#FF2222";
 const BLOCK_TYPE_2 = "#22FF22";
 const BLOCK_TYPE_3 = "#2222FF";
 const BLOCK_TYPE_4 = "#FFFF22";
 const BLOCK_TYPE_5 = "#22FFFF";
+const BLOCK_TYPE_6 = "#FF22FF";
+const BLOCK_TYPE_7 = "#FF9021";
 
-const BLOCK_TYPES = [BLOCK_TYPE_1, BLOCK_TYPE_2, BLOCK_TYPE_3, BLOCK_TYPE_4, BLOCK_TYPE_5];
+const BLOCK_TYPES = [BLOCK_TYPE_1, BLOCK_TYPE_2, BLOCK_TYPE_3, BLOCK_TYPE_4, BLOCK_TYPE_5, BLOCK_TYPE_6, BLOCK_TYPE_7];
+
+const TIMER_MIN_INTERVAL = 100;
+const TIMER_MAX_INTERVAL = 1000;
+const TIMER_INTERVAL_STEPS = 10;
 
 /** ************************************************************************************** */
 
@@ -99,13 +104,55 @@ class Field {
   }
 
   newObject() {
-    console.log("new object");
     var coords = currentTetrisObject.getCoords();
     coords.forEach( coord => {
       this.setEntry(coord[0], coord[1], currentTetrisObject.type);
     });
     currentTetrisObject = new TetrisObject(BLOCK_TYPES[Math.floor(Math.random() * BLOCK_TYPES.length)]);
     field.draw();
+  }
+
+  clearLines() {
+    while (this.clearLine()) { }
+    this.draw();
+  }
+
+  clearLine() {
+    for (let y = 0; y < this.verticalSize; y++) {
+      var completeLine = true;
+      for (let x = 0; x < this.horizontalSize; x++) {
+        if (this.getEntry(x, y) == EMTPY_BLOCK) {
+          completeLine = false;
+        }
+      }
+      if (completeLine) {
+        // increase score
+        score += this.horizontalSize;
+
+        // increase speed
+        timer_interval -= (TIMER_MAX_INTERVAL - TIMER_MIN_INTERVAL) / TIMER_INTERVAL_STEPS;
+        if (timer_interval < TIMER_MIN_INTERVAL) {
+          timer_interval = TIMER_MIN_INTERVAL;
+        }
+
+        // move all lines above it one down
+        while (y > 0) {
+          let newY = y-1;
+          this.copyLine(newY, y);
+          this.draw();
+          y--;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+  copyLine(sourceIndex, targetIndex) {
+    for (let x = 0; x < this.horizontalSize; x++) {
+      this.setEntry(x, targetIndex, this.getEntry(x, sourceIndex));
+    }
   }
 }
 
@@ -114,10 +161,6 @@ class Field {
 class TetrisObject {
   constructor(type) {
     this.type = type;
-    console.log(type);
-    if (type == STANDARD_BLOCK) {
-      this.coords = [[Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0]];
-    }
     if (type == BLOCK_TYPE_1) {
       this.coords = [
         [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0],
@@ -158,6 +201,29 @@ class TetrisObject {
         [Math.round(FIELD_HORIZONTAL_SIZE / 2), 1]
       ];
     }
+    if (type == BLOCK_TYPE_6) {
+      this.coords = [
+        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0],
+        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 1],
+        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 2],
+        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 0]
+      ];
+    }
+    if (type == BLOCK_TYPE_7) {
+      this.coords = [
+        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 0],
+        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 1],
+        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 2],
+        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0]
+      ];
+    }
+
+    // check if coords of new object are empty
+    if (! field.moveAllowed(this.coords)) {
+      // game over
+      gameOver();
+    }
+
   }
 
   moveDown() {
@@ -166,7 +232,6 @@ class TetrisObject {
       newCoords.push([coord[0], coord[1] + 1]);
     });
 
-    console.log(this.coords);
     if (field.moveAllowed(newCoords)) {
       this.coords = newCoords;
       return true;
@@ -206,9 +271,7 @@ class TetrisObject {
   }
 
   down() {
-    while (this.moveDown()) {
-      console.log("move down");
-    }
+    while (this.moveDown()) { }
     
     // field.newObject();
   }
@@ -238,7 +301,8 @@ function drawEntry(xIndex, yIndex, color) {
 
 let active = true;
 
-var timer = setInterval(main, 1000);
+var timer_interval = TIMER_MAX_INTERVAL;
+var timer = setInterval(main, timer_interval);
 
 function startStop() {
   if (active) {
@@ -247,9 +311,17 @@ function startStop() {
   }
   else {
     document.getElementById("button").innerText = "Pause";
-    timer = setInterval(main, 1000);
+    timer = setInterval(main, timer_interval);
   }
   active = !active;
+}
+
+function gameOver() {
+  startStop();
+  score = 0;
+  timer_interval = TIMER_MAX_INTERVAL;
+  field = new Field(FIELD_HORIZONTAL_SIZE, FIELD_VERTICAL_SIZE);
+
 }
 
 /** ************************************************************************************** */
@@ -258,16 +330,25 @@ var field = new Field(FIELD_HORIZONTAL_SIZE, FIELD_VERTICAL_SIZE);
 
 var currentTetrisObject = new TetrisObject(BLOCK_TYPES[Math.floor(Math.random() * BLOCK_TYPES.length)]);
 
+var score = 0;
+var topscore = 0;
+
 function main() {
-  console.log("main");
+  field.clearLines();
   var createNew = !currentTetrisObject.moveDown();
   if (createNew) {
-    console.log(createNew);
     field.newObject();
   }
   else {
     field.draw();
   }
+
+  if (score > topscore) {
+    topscore = score;
+  }
+
+  document.getElementById("score").innerText = score;
+  document.getElementById("topscore").innerText = topscore;
 }
 
 window.addEventListener(
