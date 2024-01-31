@@ -272,12 +272,10 @@ class TetrisObject {
 
   down() {
     while (this.moveDown()) { }
-    
-    // field.newObject();
   }
 
   rotate() {
-
+    
   }
 
   getCoords() {
@@ -318,6 +316,7 @@ function startStop() {
 
 function gameOver() {
   startStop();
+  document.getElementById("button").innerText = "Restart";
   score = 0;
   timer_interval = TIMER_MAX_INTERVAL;
   field = new Field(FIELD_HORIZONTAL_SIZE, FIELD_VERTICAL_SIZE);
@@ -370,7 +369,7 @@ window.addEventListener(
           currentTetrisObject.rotate();
           field.draw();
           break;
-        case "ArrowLeft":
+        case "ArrowLeft": 
           // Do something for "left arrow" key press.
           currentTetrisObject.left();
           field.draw();
@@ -384,7 +383,6 @@ window.addEventListener(
           return; // Quit when this doesn't handle the key event.
       }
     }
-    
 
     // Cancel the default action to avoid it being handled twice
     event.preventDefault();
