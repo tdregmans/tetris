@@ -40,6 +40,37 @@ const TIMER_MIN_INTERVAL = 100;
 const TIMER_MAX_INTERVAL = 1000;
 const TIMER_INTERVAL_STEPS = 10;
 
+
+/** ************************************************************************************** */
+
+/**
+* Set the value of cookie with name and value
+*/
+function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  let expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+/**
+* Get the value of the cookie by name
+*/
+function getCookie(cname) {
+  let name = cname + "=";
+  let ca = document.cookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
 /** ************************************************************************************** */
 
 /**
@@ -574,6 +605,12 @@ var currentTetrisObject = new TetrisObject(BLOCK_TYPES[Math.floor(Math.random() 
 var score = 0;
 var topscore = 0;
 
+// get highscore from cookie
+if (getCookie("highscore") != "") {
+  topscore = getCookie("highscore");
+  console.log("cookie found: " + topscore);
+}
+
 /**
  * Main function, called by timer at each timout.
  * Clears lines, moves the currentTetrisObject down, creates a new object if needed and increases the score.
@@ -591,6 +628,7 @@ function main() {
 
   if (score > topscore) {
     topscore = score;
+    setCookie("highscore", topscore, 365);
   }
 
   document.getElementById("score").innerText = score;
