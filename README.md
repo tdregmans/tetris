@@ -2,16 +2,24 @@
 
 ## Status
 
-The project is under development.
+The game functions as normal. See [the latest release](https://github.com/tdregmans/Tetris/releases/latest) for the latest version.
 
 ## Idea
 
 It is not needed to further elaborate on the idea for this game. This project implements the standard game, known to almost everybody.
 
-## Programming architecture
+## Instructions
 
-There is a field in which the blocks are put. This field is a Field object. This Field object has a number of entries; 10 by 30 to be exact.
-Block objects come down from the top. Blocks are 
+The game can be played at [tetris.tdregmans.nl](http://tetris.tdregmans.nl).
+
+The following instructions apply:
+
+- The game starts when the page is loaded.
+- The goal is to have as many completed rows. This can be down by moving the block that is coming down.
+- The block can be moved to the left by using the '<' key.
+- The block can be moved to the right by using the '>' key.
+- The block can be rotated clockwise by using the '^' key.
+- Once the block can nolonger move, a new block is created.
 
 ## File stucture
 
