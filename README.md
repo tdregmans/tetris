@@ -16,9 +16,9 @@ The following instructions apply:
 
 - The game starts when the page is loaded.
 - The goal is to have as many completed rows. This can be down by moving the block that is coming down.
-- The block can be moved to the left by using the '<' key.
-- The block can be moved to the right by using the '>' key.
-- The block can be rotated clockwise by using the '^' key.
+- The block can be moved to the left by using the :arrow_left: key.
+- The block can be moved to the right by using the :arrow_right: key.
+- The block can be rotated clockwise by using the :arrow_up: key.
 - Once the block can nolonger move, a new block is created.
 
 ## File stucture
