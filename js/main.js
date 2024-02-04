@@ -158,65 +158,171 @@ class Field {
 
 /** ************************************************************************************** */
 
+const START_COORD = [Math.round(FIELD_HORIZONTAL_SIZE / 2), 0];
+
+const BLOCK_TYPE_1_COORDS = [
+  [
+    [-1, 0],
+    [-1, 1],
+    [-1, 2],
+    [-1, 3]
+  ],
+  [
+    [-1, 0],
+    [0, 0],
+    [1, 0],
+    [2, 0]
+  ]
+];
+
+const BLOCK_TYPE_2_COORDS = [
+  [
+    [-1, 0],
+    [-1, 1],
+    [0, 1],
+    [0, 2]
+  ],
+  [
+    [0, 0],
+    [1, 0],
+    [1, 1],
+    [2, 1]
+  ]
+];
+
+const BLOCK_TYPE_3_COORDS = [
+  [
+    [0, 0],
+    [0, 1],
+    [-1, 1],
+    [-1, 2]
+  ],
+  [
+    [-1, 0],
+    [0, 0],
+    [0, 1],
+    [1, 1]
+  ]
+];
+
+const BLOCK_TYPE_4_COORDS = [
+  [
+    [-1, 0],
+    [-1, 1],
+    [-2, 1],
+    [0, 1]
+  ],
+  [
+    [-1, 0],
+    [-1, 1],
+    [-1, 2],
+    [0, 1]
+  ],
+  [
+    [-1, 2],
+    [-1, 1],
+    [-2, 1],
+    [0, 1]
+  ],
+  [
+    [-1, 0],
+    [-1, 1],
+    [-1, 2],
+    [-2, 1]
+  ]
+];
+
+const BLOCK_TYPE_5_COORDS = [
+  [
+    [-1, 0],
+    [-1, 1],
+    [0, 0],
+    [0, 1]
+  ]
+];
+
+const BLOCK_TYPE_6_COORDS = [
+  [
+    [-1, 0],
+    [-1, 1],
+    [-1, 2],
+    [0, 0]
+  ],
+  [
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+    [1, 2]
+  ],
+  [
+    [-1, 0],
+    [-1, 1],
+    [-1, 2],
+    [-2, 2]
+  ],
+  [
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+    [-1, 0]
+  ]
+];
+
+const BLOCK_TYPE_7_COORDS = [
+  [
+    [0, 0],
+    [0, 1],
+    [0, 2],
+    [-1, 0]
+  ],
+  [
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+    [1, 0]
+  ],
+  [
+    [0, 0],
+    [0, 1],
+    [0, 2],
+    [1, 2]
+  ],
+  [
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+    [-1, 0]
+  ]
+];
+
 class TetrisObject {
   constructor(type) {
+    console.log(type);
     this.type = type;
+    this.variant = 0;
+
     if (type == BLOCK_TYPE_1) {
-      this.coords = [
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 1],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 2],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 3]
-      ];
+      this.rotateCoords = BLOCK_TYPE_1_COORDS;
     }
     if (type == BLOCK_TYPE_2) {
-      this.coords = [
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 1],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 1],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 2]
-      ];
+      this.rotateCoords = BLOCK_TYPE_2_COORDS;
     }
     if (type == BLOCK_TYPE_3) {
-      this.coords = [
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 0],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 1],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 1],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 2]
-      ];
+      this.rotateCoords = BLOCK_TYPE_3_COORDS;
     }
     if (type == BLOCK_TYPE_4) {
-      this.coords = [
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 1],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 2, 1],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 1]
-      ];
+      this.rotateCoords = BLOCK_TYPE_4_COORDS;
     }
     if (type == BLOCK_TYPE_5) {
-      this.coords = [
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 1],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 0],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 1]
-      ];
+      this.rotateCoords = BLOCK_TYPE_5_COORDS;
     }
     if (type == BLOCK_TYPE_6) {
-      this.coords = [
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 1],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 2],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 0]
-      ];
+      this.rotateCoords = BLOCK_TYPE_6_COORDS;
     }
     if (type == BLOCK_TYPE_7) {
-      this.coords = [
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 0],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 1],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2), 2],
-        [Math.round(FIELD_HORIZONTAL_SIZE / 2) - 1, 0]
-      ];
+      this.rotateCoords = BLOCK_TYPE_7_COORDS;
     }
+    this.coords = this.addCoords(START_COORD, this.rotateCoords[this.variant]);
 
     // check if coords of new object are empty
     if (! field.moveAllowed(this.coords)) {
@@ -224,6 +330,26 @@ class TetrisObject {
       gameOver();
     }
 
+  }
+
+  newVariant() {
+    console.log(this.variant);
+    var maxVariant = this.rotateCoords.length - 1;
+    console.log(maxVariant);
+    this.variant += 1;
+
+    if (this.variant > maxVariant) {
+      this.variant = 0;
+    }
+  }
+
+  addCoords (start, base) {
+    var result = [];
+    base.forEach( coord => {
+      console.log(coord);  
+      result.push([start[0] + coord[0], start[1] + coord[1]]);
+    });
+    return result;
   }
 
   moveDown() {
@@ -275,7 +401,9 @@ class TetrisObject {
   }
 
   rotate() {
-    
+    this.newVariant();
+
+    this.coords = this.addCoords(START_COORD, this.rotateCoords[this.variant]);
   }
 
   getCoords() {
