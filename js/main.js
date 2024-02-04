@@ -297,9 +297,10 @@ const BLOCK_TYPE_7_COORDS = [
 
 class TetrisObject {
   constructor(type) {
-    console.log(type);
     this.type = type;
     this.variant = 0;
+
+    this.mainCoord = START_COORD;
 
     if (type == BLOCK_TYPE_1) {
       this.rotateCoords = BLOCK_TYPE_1_COORDS;
@@ -322,7 +323,7 @@ class TetrisObject {
     if (type == BLOCK_TYPE_7) {
       this.rotateCoords = BLOCK_TYPE_7_COORDS;
     }
-    this.coords = this.addCoords(START_COORD, this.rotateCoords[this.variant]);
+    this.coords = this.addCoords(this.mainCoord, this.rotateCoords[this.variant]);
 
     // check if coords of new object are empty
     if (! field.moveAllowed(this.coords)) {
@@ -332,10 +333,8 @@ class TetrisObject {
 
   }
 
-  newVariant() {
-    console.log(this.variant);
+  increaseVariantPointer() {
     var maxVariant = this.rotateCoords.length - 1;
-    console.log(maxVariant);
     this.variant += 1;
 
     if (this.variant > maxVariant) {
@@ -346,7 +345,6 @@ class TetrisObject {
   addCoords (start, base) {
     var result = [];
     base.forEach( coord => {
-      console.log(coord);  
       result.push([start[0] + coord[0], start[1] + coord[1]]);
     });
     return result;
@@ -360,6 +358,7 @@ class TetrisObject {
 
     if (field.moveAllowed(newCoords)) {
       this.coords = newCoords;
+      this.mainCoord = [this.mainCoord[0], this.mainCoord[1] + 1];
       return true;
     }
     else {
@@ -375,6 +374,7 @@ class TetrisObject {
     });
     if (field.moveAllowed(newCoords)) {
       this.coords = newCoords;
+      this.mainCoord = [this.mainCoord[0] - 1, this.mainCoord[1]];
       return true;
     }
     else {
@@ -389,6 +389,7 @@ class TetrisObject {
     });
     if (field.moveAllowed(newCoords)) {
       this.coords = newCoords;
+      this.mainCoord = [this.mainCoord[0] + 1, this.mainCoord[1]];
       return true;
     }
     else {
@@ -401,9 +402,16 @@ class TetrisObject {
   }
 
   rotate() {
-    this.newVariant();
+    this.increaseVariantPointer();
 
-    this.coords = this.addCoords(START_COORD, this.rotateCoords[this.variant]);
+    var newCoords = this.addCoords(this.mainCoord, this.rotateCoords[this.variant]);
+    if (field.moveAllowed(newCoords)) {
+      this.coords = newCoords;
+    }
+    else {
+      // rotation nog allowed
+      this.variant =- 1;
+    }
   }
 
   getCoords() {
@@ -428,23 +436,25 @@ function drawEntry(xIndex, yIndex, color) {
 let active = true;
 
 var timer_interval = TIMER_MAX_INTERVAL;
-var timer = setInterval(main, timer_interval);
+var timer = setTimeout(main, timer_interval);
 
 function startStop() {
   if (active) {
     document.getElementById("button").innerText = "Continue";
-    clearInterval(timer);
+    clearTimeout(timer);
   }
   else {
     document.getElementById("button").innerText = "Pause";
-    timer = setInterval(main, timer_interval);
+    timer = setTimeout(main, timer_interval);
   }
   active = !active;
 }
 
 function gameOver() {
-  startStop();
+  // startStop();
   document.getElementById("button").innerText = "Restart";
+  active = false;
+  clearTimeout(timer);
   score = 0;
   timer_interval = TIMER_MAX_INTERVAL;
   field = new Field(FIELD_HORIZONTAL_SIZE, FIELD_VERTICAL_SIZE);
@@ -476,6 +486,10 @@ function main() {
 
   document.getElementById("score").innerText = score;
   document.getElementById("topscore").innerText = topscore;
+  if (active) {
+
+    timer = setTimeout(main, timer_interval);
+  }
 }
 
 window.addEventListener(
